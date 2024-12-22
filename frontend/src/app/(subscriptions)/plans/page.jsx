@@ -1,5 +1,5 @@
 import React from 'react'
-import Subscriptions from '@/views/Subscriptions';
+import Subscriptions from '@/views/subscriptions';
 
 const PlansPage = () => {
   return (
