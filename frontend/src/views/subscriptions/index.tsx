@@ -27,14 +27,28 @@ const Subscriptions = () => {
   const [billingInterval, setBillingInterval] = useState<string>("month");
   const [plans, setPlans] = useState<any[]>([]);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const customerId = "cus_RRrCyKHYt4cX6f"; 
+  const customerId = "cus_RRrCyKHYt4cX6f";
+  const checkSubscription = async (customerId: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/stripe/is-subscribed/${customerId}`
+      );
+      return response.data.isSubscribed;
+    } catch (error) {
+      console.error("Error checking subscription:", error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const loadPricesAndSubscriptions = async () => {
       try {
         const prices = await fetchPrices();
         const userSubscriptions = await fetchUserSubscriptions(customerId);
+        const isSubscribed = await checkSubscription(customerId);
 
         const groupedPlans = prices.reduce((acc: any, price: any) => {
           const product = acc[price.product.id] || { ...price.product, prices: {} };
@@ -45,6 +59,7 @@ const Subscriptions = () => {
 
         setPlans(Object.values(groupedPlans));
         setSubscriptions(userSubscriptions);
+        setIsSubscribed(userSubscriptions);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -63,6 +78,9 @@ const Subscriptions = () => {
     );
   }
 
+  const isUserSubscribed = () => {
+    return
+  }
   const isCurrentPlan = (productId: string, interval: string) => {
     return subscriptions.some(
       (subscription) =>
@@ -115,7 +133,10 @@ const Subscriptions = () => {
               </span>{" "}
               / {billingInterval}
             </p>
-            {isCurrentPlan(plan.id, billingInterval) ? (
+            {!isSubscribed && (
+              <CheckoutButton priceId={plan.prices[billingInterval]?.id} />
+            )}
+            {/* {isCurrentPlan(plan.id, billingInterval) ? (
               <p className="mt-4 text-lg text-gray-600 font-semibold">Current Plan</p>
             ) : isSamePlanDifferentInterval(plan.id, billingInterval) ? (
               <button
@@ -132,7 +153,7 @@ const Subscriptions = () => {
               <CheckoutButton priceId={plan.prices[billingInterval].id} />
             ) : (
               <p className="text-red-500 mt-2">No pricing available for this interval</p>
-            )}
+            )} */}
           </div>
         ))}
       </div>

@@ -15,6 +15,23 @@ router.get('/get-prices', async (req, res) => {
   }
 });
 
+router.get('/is-subscribed/:customerId', async (req, res) => {
+  const { customerId } = req.params;
+
+  try {
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+    });
+
+    const isSubscribed = subscriptions.data.length > 0;
+
+    res.json({ isSubscribed });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to check subscription status" });
+  }
+});
+
 router.post('/create-checkout-session', async (req, res) => {
   const { priceId, customerId } = req.body;
   const subscriptions = await stripe.subscriptions.list({
