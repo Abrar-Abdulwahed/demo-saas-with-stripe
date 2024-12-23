@@ -1,7 +1,17 @@
+"use client"
 import Link from "next/link";
 import Image from "next/image";
+import axios from "axios"
 
 export default function Home() {
+  const handleManageSubscription = async () => {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/stripe/create-portal-session`,
+      { customerId: 'cus_RRpKEh7at0YMnd' }
+    );
+
+    window.location.href = response.data.url;
+  }
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       {/* Main Content */}
@@ -27,7 +37,7 @@ export default function Home() {
           <Link href="/plans" className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-blue-500 text-white gap-2 hover:bg-blue-600 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5">
             View Plans
           </Link>
-          <Link href="/manage" className="rounded-full border border-solid border-gray-300 dark:border-gray-600 transition-colors flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5">
+          <Link href="#" onClick={handleManageSubscription} className="rounded-full border border-solid border-gray-300 dark:border-gray-600 transition-colors flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5">
             Manage Subscriptions
           </Link>
         </div>

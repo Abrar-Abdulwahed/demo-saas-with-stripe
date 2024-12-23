@@ -59,7 +59,7 @@ const Subscriptions = () => {
 
         setPlans(Object.values(groupedPlans));
         setSubscriptions(userSubscriptions);
-        setIsSubscribed(userSubscriptions);
+        setIsSubscribed(isSubscribed);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
